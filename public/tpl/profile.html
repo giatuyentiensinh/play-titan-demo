@@ -3,10 +3,10 @@
         <div class="center-align  col s12 m4 l3" ng-repeat="person in persons">
             <ul class="collapsible popout" data-collapsible="accordion" watch>
                 <li>
-                    <div class="collapsible-header"><i class="mdi-image-filter-drama"></i>name</div>
-                    <div class="collapsible-body">
+                    <div class="collapsible-header indigo-text text-darken-4"><i class="mdi-image-filter-drama"></i>{{person.name}}</div>
+                    <!-- <div class="collapsible-body">
                         <p>{{person.name}}</p>
-                    </div>
+                    </div> -->
                     <a class='btn red darken-4' href='#relation' modal ng-click="currentPerson(person.name)">Add relation</a>
                 </li>
                 <li>
@@ -74,8 +74,16 @@
                 <label for="inperson">In person</label>
             </div>
             <div class="input-field col s6">
+                <input ng-model="inproperty" type="text" class="validate">
+                <label for="inperson">In property</label>
+            </div>
+            <div class="input-field col s6">
                 <input ng-model="outperson" type="text" class="validate">
                 <label for="outperson">Out person</label>
+            </div>
+            <div class="input-field col s6">
+                <input ng-model="outproperty" type="text" class="validate">
+                <label for="outperson">Out property</label>
             </div>
         </div>
         <div class="modal-footer">

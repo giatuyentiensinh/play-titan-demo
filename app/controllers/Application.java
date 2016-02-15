@@ -12,7 +12,6 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.thinkaurelius.titan.core.TitanGraph;
 import com.tinkerpop.blueprints.Edge;
@@ -39,7 +38,7 @@ public class Application extends Controller {
 			Logger.info("desc: " + vertex.getProperty("desc"));
 			Logger.debug("-----------");
 		}
-		
+
 		FramedGraphFactory factory = new FramedGraphFactory(
 				new GremlinGroovyModule());
 		FramedTransactionalGraph<TitanGraph> frame = factory.create(graph);
@@ -90,9 +89,12 @@ public class Application extends Controller {
 			ObjectNode idNode = Json.newObject();
 			idNode.put("from", in);
 			idNode.put("to", out);
+			idNode.put("arrows", "to");
+			idNode.put("label", edge_friend.getRelation());
+			ObjectNode font = Json.newObject();
+			font.put("align", "middle");
+			idNode.put("font", Json.toJson(font));
 			listId.add(idNode);
-
-			edge_friend.setRelation("Thật là tuyệt vời");
 
 			friends.add(edge_friend);
 		}
@@ -105,30 +107,35 @@ public class Application extends Controller {
 	}
 
 	public static Result savePerson() {
-		Form<People> form = new Form<People>(People.class).bindFromRequest();
+		Form<VertexC> form = new Form<VertexC>(VertexC.class).bindFromRequest();
 		if (form.hasErrors())
 			// return badRequest("Form không hợp lệ");
 			return badRequest(form.errorsAsJson());
 
-		People people = form.get();
+		VertexC VertexC = form.get();
 
 		FramedGraphFactory factory = new FramedGraphFactory(
 				new GremlinGroovyModule());
 		FramedTransactionalGraph<TitanGraph> frame = factory.create(graph);
 		Vertex vertex = frame.addVertex(1);
 		Person person = frame.getVertex(vertex.getId(), Person.class);
-		person.setName(people.name);
-		person.setAge(people.age);
-		person.setDesc(people.desc);
+		person.setName(VertexC.name);
+		person.setAge(VertexC.age);
+		person.setDesc(VertexC.desc);
 
 		graph.commit();
 
-		return ok(Json.toJson(people));
+		return ok(Json.toJson(VertexC));
 	}
 
 	public static Result updateEdge() {
-		JsonNode params = request().body().asJson();
-		String personname = params.get("person").asText();
+
+		Form<EdgeC> form = new Form<EdgeC>(EdgeC.class).bindFromRequest();
+
+		if (form.hasErrors())
+			return badRequest(form.errorsAsJson());
+		EdgeC edgeC = form.get();
+		String personname = edgeC.person;
 
 		FramedGraphFactory factory = new FramedGraphFactory(
 				new GremlinGroovyModule(), new JavaHandlerModule());
@@ -136,43 +143,64 @@ public class Application extends Controller {
 
 		Vertex v = graph.getVertices("name", personname).iterator().next();
 
-		String namein = params.get("inperson").asText();
+		String namein = edgeC.inperson;
 		Vertex vin = graph.getVertices("name", namein).iterator().next();
 		Logger.info("in person: " + namein);
 
-		String nameout = params.get("outperson").asText();
+		String nameout = edgeC.outperson;
 		Vertex vout = graph.getVertices("name", nameout).iterator().next();
 		Logger.info("out person: " + nameout);
 
-		Object idedge1 = graph.addEdge(1, v, vout, "friend").getId();
-		Object idedge2 = graph.addEdge(1, vin, v, "know").getId();
+		Object idedge1 = graph.addEdge(1, vout, v, "friend").getId();
+		Object idedge2 = graph.addEdge(1, v, vin, "know").getId();
 
 		Friend edge1 = frame.getEdge(idedge1, Friend.class);
 		Friend edge2 = frame.getEdge(idedge2, Friend.class);
 
-		frame.commit();
-		
-		System.out.println("Vexter: " + Json.toJson(v.getProperty("name")));
-		
-		System.out.println("Inperson edge1:" + Json.toJson(edge1.getInPerson()));
-		System.out.println("Outperson edge1: " +  Json.toJson(edge1.getOutPerson()));
+		edge1.setRelation(edgeC.outproperty);
+		edge2.setRelation(edgeC.inproperty);
 
-		System.out.println("Inperson edge1:" + Json.toJson(edge2.getInPerson()));
-		System.out.println("Outperson edge1: " +  Json.toJson(edge2.getOutPerson()));
+		frame.commit();
+
+		System.out.println("Vexter: " + Json.toJson(v.getProperty("name")));
+
+		System.out
+				.println("Inperson edge1:" + Json.toJson(edge1.getInPerson()));
+		System.out.println("Outperson edge1: "
+				+ Json.toJson(edge1.getOutPerson()));
+
+		System.out
+				.println("Inperson edge1:" + Json.toJson(edge2.getInPerson()));
+		System.out.println("Outperson edge1: "
+				+ Json.toJson(edge2.getOutPerson()));
+
+		ObjectNode node = Json.newObject();
+		node.put("edge1", Json.toJson(edge1));
+		node.put("edge2", Json.toJson(edge2));
 		
-		return ok(Json.toJson(edge2));
+		return ok(Json.toJson(node));
 	}
 
-	public static class People {
+	public static class VertexC {
 		@Required
 		public String name;
 		@Required
 		public Integer age;
 		@Required
 		public String desc;
+	}
 
-		public People() {
-			super();
-		}
+	public static class EdgeC {
+		@Required
+		public String person;
+		@Required
+		public String inperson;
+		@Required
+		public String inproperty;
+		@Required
+		public String outperson;
+		@Required
+		public String outproperty;
+
 	}
 }

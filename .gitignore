@@ -1,3 +1,4 @@
+bin
 logs
 target
 /.idea
@@ -7,4 +8,5 @@ target
 /.settings
 /RUNNING_PID
 public/bower_components
+db
 activator*

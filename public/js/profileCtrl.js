@@ -39,12 +39,15 @@ app.controller('profileCtrl', function($scope, $http) {
         $http.post('/relation', {
             person: $scope.currentname,
             inperson: $scope.inperson,
-            outperson: $scope.outperson
+            inproperty: $scope.inproperty,
+            outperson: $scope.outperson,
+            outproperty: $scope.outproperty
         }).success(function(data) {
             console.log(data);
             Materialize.toast(JSON.stringify(data), 10000, 'rounded');
-            $scope.inperson = $scope.outperson = '';
+            $scope.inperson = $scope.outperson = $scope.outproperty = $scope.inproperty = '';
         }).error(function(data) {
+            Materialize.toast(JSON.stringify(data), 10000, 'rounded');
             console.log(data);
         });
     };
