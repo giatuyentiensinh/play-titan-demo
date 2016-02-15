@@ -1,0 +1,85 @@
+<div class="container">
+    <div class="row">
+        <div class="center-align  col s12 m4 l3" ng-repeat="person in persons">
+            <ul class="collapsible popout" data-collapsible="accordion" watch>
+                <li>
+                    <div class="collapsible-header"><i class="mdi-image-filter-drama"></i>name</div>
+                    <div class="collapsible-body">
+                        <p>{{person.name}}</p>
+                    </div>
+                    <a class='btn red darken-4' href='#relation' modal ng-click="currentPerson(person.name)">Add relation</a>
+                </li>
+                <li>
+                    <div class="collapsible-header"><i class="mdi-maps-place"></i>age</div>
+                    <div class="collapsible-body">
+                        <p>{{person.age}}</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header"><i class="mdi-social-whatshot"></i>description</div>
+                    <div class="collapsible-body">
+                        <p>{{person.desc}}</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <form class="col s12" ng-submit="submit()">
+        <div class="row">
+            <div class="input-field col s6">
+                <input ng-model="name" type="text" class="validate">
+                <label for="name">name</label>
+            </div>
+            <div class="input-field col s6">
+                <input ng-model="age" type="text" class="validate">
+                <label for="age">age</label>
+            </div>
+            <div class="input-field col s12">
+                <div class="input-field col s12">
+                    <textarea ng-model="desc" class="materialize-textarea"></textarea>
+                    <label for="desc">Description</label>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn waves-effect waves-light"><i class="mdi-content-send right"></i></button>
+        <button type="reset" class="red darken-2 btn waves-effect waves-teal"><i class="mdi-content-clear"></i></button>
+    </form>
+</div>
+<!-- Modal Trigger -->
+<div class="center-align m">
+    <a class='btn red darken-3' href='#demoModal' modal>Show Modal</a>
+</div>
+<div class="parallax-container m">
+    <div parallax><img src="img/parallax1.jpg"></div>
+</div>
+<!-- Modal Structure -->
+<div id="demoModal" class="modal">
+    <div class="modal-content">
+        <h1 class="red-text text-darken-3">Tôi là</h1>
+        <h3 class="deep-purple-text text-accent-4 flow-text">Một lập trình viên</h3>
+    </div>
+    <div class="modal-footer">
+        <a href class=" modal-action modal-close waves-effect waves-green btn-flat">Yap</a>
+    </div>
+</div>
+<!-- Modal Structure -->
+<div id="relation" class="modal">
+    <form ng-submit="updateRelation()">
+        <div class="modal-content">
+            <h4>{{currentname}}</h4>
+            <div class="input-field col s6">
+                <input ng-model="inperson" type="text" class="validate">
+                <label for="inperson">In person</label>
+            </div>
+            <div class="input-field col s6">
+                <input ng-model="outperson" type="text" class="validate">
+                <label for="outperson">Out person</label>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="waves-effect waves-green btn-flat modal-action modal-close">Update</button>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,15 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "client site, angularjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "start"
+  },
+  "keywords": [
+    "angularjs",
+    "materialize"
+  ],
+  "author": "tuyenng",
+  "license": "MIT"
+}

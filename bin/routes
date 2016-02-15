@@ -1,0 +1,16 @@
+# Home page
+GET		/										controllers.Assets.at(path="/public", file = "index.html")
+
+GET		/persons								controllers.Application.showPerson()
+GET		/friends								controllers.Application.showFriend()
+
+POST	/post									controllers.Application.savePerson()
+POST	/relation								controllers.Application.updateEdge()
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /bower_components/*file               	controllers.Assets.at(path="/public/bower_components", file)
+GET     /js/*file               				controllers.Assets.at(path="/public/js", file)
+GET     /css/*file               				controllers.Assets.at(path="/public/css", file)
+GET     /tpl/*file               				controllers.Assets.at(path="/public/tpl", file)
+GET     /font/*file               				controllers.Assets.at(path="/public/font", file)
+GET     /img/*file               				controllers.Assets.at(path="/public/img", file)

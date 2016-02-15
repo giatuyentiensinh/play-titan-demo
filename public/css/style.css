@@ -1,0 +1,26 @@
+.m {
+	margin: 15px;
+}
+.m-l {
+	margin-left: 15px;
+}
+
+.m-r {
+	margin-right: 15px;
+}
+
+.m-b {
+	margin-bottom: 15px;
+}
+
+.m-t {
+	margin-top: 15px;
+}
+
+.m-sm {
+	margin: 10px;
+}
+
+.m-xs {
+	margin: 5px;
+}

@@ -1,0 +1,28 @@
+{
+  "name": "app",
+  "description": "client site, angularjs",
+  "main": "index.js",
+  "authors": [
+    "tuyenng"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "angularjs",
+    "materialize"
+  ],
+  "moduleType": [],
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "vis": "^4.14.0",
+    "angular-materialize": "~0.1.2",
+    "angular": "angularjs#~1.4.9",
+    "angular-ui-router": "~0.2.17"
+  }
+}

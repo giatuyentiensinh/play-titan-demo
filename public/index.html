@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html ng-app="app">
+
+<head>
+    <title>Welcome</title>
+    <!--Import materialize.css-->
+    <link rel="shortcut icon" type="image/ico" href="img/favicon.ico">
+    <link type="text/css" rel="stylesheet" href="css/style.css" media="screen,projection" />
+    <link type="text/css" rel="stylesheet" href="css/icon.css" media="screen,projection" />
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <!-- bower:css -->
+    <link rel="stylesheet" href="bower_components/vis/dist/vis.min.css" />
+    <link rel="stylesheet" href="bower_components/materialize/bin/materialize.css" />
+    <!-- endbower -->
+</head>
+
+<body>
+    <div ui-view></div>
+    <!--Import jQuery before materialize.js-->
+    <!-- bower:js -->
+    <script src="bower_components/vis/dist/vis.min.js"></script>
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/materialize/bin/materialize.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-materialize/src/angular-materialize.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <!-- endbower -->
+    <script type="text/javascript" src="js/app.js"></script>
+    <script type="text/javascript" src="js/router.js"></script>
+    <script type="text/javascript" src="js/profileCtrl.js"></script>
+    <script type="text/javascript" src="js/graphCtrl.js"></script>
+</body>
+
+</html>
