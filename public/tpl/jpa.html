@@ -1,0 +1,25 @@
+<section ng-init="initData()">
+    <ul class="collection with-header">
+        <li class="collection-header">
+            <h4>User list</h4>
+        </li>
+        <li class="collection-item" ng-repeat="user in users">
+            <div>{{user.name}}<a href="#!" class="secondary-content"><i class="material-icons">send</i></a></div>
+        </li>
+    </ul>
+</section>
+<section>
+    <div class="row">
+        <form class="col s12" ng-submit="submit()">
+            <div class="row">
+                <div class="input-field col s6">
+                    <input id="username" ng-model="username" type="text" class="validate">
+                    <label for="username">username</label>
+                </div>
+                <div class="input-field col s6">
+                    <button type="submit" class="btn waves-effect waves-light"><i class="material-icons right">send</i></button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>

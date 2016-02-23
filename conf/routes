@@ -7,6 +7,9 @@ GET		/friends								controllers.Application.showFriend()
 POST	/post									controllers.Application.savePerson()
 POST	/relation								controllers.Application.updateEdge()
 
+GET		/users		controllers.Users.lists
+POST	/save		controllers.Users.saveUser
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /bower_components/*file               	controllers.Assets.at(path="/public/bower_components", file)
 GET     /js/*file               				controllers.Assets.at(path="/public/js", file)

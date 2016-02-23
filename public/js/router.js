@@ -22,5 +22,10 @@ app.config(function($stateProvider, $urlRouterProvider) {
 			url: '/graph',
 			templateUrl: 'tpl/graph.html',
 			controller: 'graphCtrl'
+		})
+		.state('app.jpa', {
+			url: '/jpa',
+			templateUrl: 'tpl/jpa.html',
+			controller: 'jpaCtrl'
 		});
 });
