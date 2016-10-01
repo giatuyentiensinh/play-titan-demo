@@ -155,7 +155,6 @@ public class Application extends Controller {
 		node.put("id", vertex.getId().toString());
 		node.put("label", person.getName());
 		node.put("isVertex", true);
-		Logger.debug("node: " + node);
 		sendEv(node);
 
 		return ok(Json.toJson(VertexC));
@@ -235,16 +234,15 @@ public class Application extends Controller {
 		idNode2.put("label", edgeC.outproperty);
 		idNode2.put("font", Json.toJson(font));
 
-		List edges = new ArrayList<ObjectNode>() {
+		edge.put("ids", Json.toJson(new ArrayList<ObjectNode>() {
+			private static final long serialVersionUID = 1L;
+
 			{
 				add(idNode1);
 				add(idNode2);
 			}
-		};
-
-		edge.put("ids", Json.toJson(edges));
+		}));
 		edge.put("isVertex", false);
-		Logger.debug("edge: " + edge);
 		sendEv(edge);
 
 		return ok(Json.toJson(node));

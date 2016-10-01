@@ -4,7 +4,7 @@
             <h4>User list</h4>
         </li>
         <li class="collection-item" ng-repeat="user in users">
-            <div>{{user.name}}<a href="#!" class="secondary-content"><i class="material-icons">send</i></a></div>
+            <div>{{user.name}}</div>
         </li>
     </ul>
 </section>
@@ -17,7 +17,11 @@
                     <label for="username">username</label>
                 </div>
                 <div class="input-field col s6">
-                    <button type="submit" class="btn waves-effect waves-light"><i class="material-icons right">send</i></button>
+                    <button type="submit" class="btn waves-effect waves-light">
+                        <svg style="width:32px;height:32px" viewBox="0 0 24 24">
+                            <path fill="#FAFAFA" d="M2,21L23,12L2,3V10L17,12L2,14V21Z" />
+                        </svg>
+                    </button>
                 </div>
             </div>
         </form>

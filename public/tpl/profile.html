@@ -29,17 +29,17 @@
     <form class="col s12" ng-submit="submit()">
         <div class="row">
             <div class="input-field col s6">
-                <input ng-model="name" type="text" class="validate">
-                <label for="name">name</label>
+                <input ng-model="name" type="text" class="validate" required>
+                <label for="name">name * </label>
             </div>
             <div class="input-field col s6">
-                <input ng-model="age" type="text" class="validate">
-                <label for="age">age</label>
+                <input ng-model="age" type="number" class="validate" required>
+                <label for="age">age *</label>
             </div>
             <div class="input-field col s12">
                 <div class="input-field col s12">
-                    <textarea ng-model="desc" class="materialize-textarea"></textarea>
-                    <label for="desc">Description</label>
+                    <textarea ng-model="desc" class="materialize-textarea" required></textarea>
+                    <label for="desc">Description *</label>
                 </div>
             </div>
         </div>
@@ -70,20 +70,20 @@
         <div class="modal-content">
             <h4>{{currentname}}</h4>
             <div class="input-field col s6">
-                <input ng-model="inperson" type="text" class="validate">
-                <label for="inperson">In person</label>
+                <input ng-model="inperson" type="text" class="validate" required>
+                <label for="inperson">In person *</label>
             </div>
             <div class="input-field col s6">
-                <input ng-model="inproperty" type="text" class="validate">
-                <label for="inperson">In property</label>
+                <input ng-model="inproperty" type="text" class="validate" required>
+                <label for="inperson">In property *</label>
             </div>
             <div class="input-field col s6">
-                <input ng-model="outperson" type="text" class="validate">
-                <label for="outperson">Out person</label>
+                <input ng-model="outperson" type="text" class="validate" required>
+                <label for="outperson">Out person *</label>
             </div>
             <div class="input-field col s6">
-                <input ng-model="outproperty" type="text" class="validate">
-                <label for="outperson">Out property</label>
+                <input ng-model="outproperty" type="text" class="validate" required>
+                <label for="outperson">Out property *</label>
             </div>
         </div>
         <div class="modal-footer">

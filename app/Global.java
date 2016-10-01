@@ -6,9 +6,18 @@ import play.GlobalSettings;
 import play.Logger;
 import play.Play;
 
+import com.thinkaurelius.titan.core.PropertyKey;
 import com.thinkaurelius.titan.core.TitanFactory;
+import com.thinkaurelius.titan.core.schema.Mapping;
+import com.thinkaurelius.titan.core.schema.TitanManagement;
+import com.tinkerpop.blueprints.Vertex;
 
 public class Global extends GlobalSettings {
+
+	public static final String LABEL = "PERSON";
+	public static final String NAME = "name";
+	public static final String SEARCH_NAME = "Search_name";
+	public static final String SEARCH_ENGINE = "search";
 
 	@Override
 	public void onStart(Application app) {
@@ -35,8 +44,17 @@ public class Global extends GlobalSettings {
 		}
 
 		System.out.println(controllers.Application.graph);
-		Logger.info("Global.onStart");
-
+		TitanManagement mgmt = controllers.Application.graph
+				.getManagementSystem();
+		if (!mgmt.containsVertexLabel(LABEL)) {
+			PropertyKey name = mgmt.makePropertyKey(NAME)
+					.dataType(String.class).make();
+			mgmt.makeVertexLabel(LABEL).make();
+			mgmt.buildIndex(SEARCH_NAME, Vertex.class)
+					.addKey(name, Mapping.TEXT.getParameter())
+					.buildMixedIndex(SEARCH_ENGINE);
+			mgmt.commit();
+		}
 		super.onStart(app);
 	}
 
