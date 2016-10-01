@@ -1,6 +1,8 @@
 # Home page
 GET		/										controllers.Assets.at(path="/public", file = "index.html")
 
+GET		/register/realtime/graph				controllers.Application.registerRealTimeGraph()
+
 GET		/persons								controllers.Application.showPerson()
 GET		/friends								controllers.Application.showFriend()
 

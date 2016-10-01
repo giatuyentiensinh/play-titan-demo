@@ -10,3 +10,4 @@ target
 public/bower_components
 db
 activator*
+/bin

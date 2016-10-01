@@ -1,17 +1,21 @@
 package controllers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import models.edge.Friend;
 import models.vertex.Person;
 import play.Logger;
 import play.data.Form;
 import play.data.validation.Constraints.Required;
+import play.libs.EventSource;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.thinkaurelius.titan.core.TitanGraph;
 import com.tinkerpop.blueprints.Edge;
@@ -22,10 +26,28 @@ import com.tinkerpop.frames.FramedTransactionalGraph;
 import com.tinkerpop.frames.modules.gremlingroovy.GremlinGroovyModule;
 import com.tinkerpop.frames.modules.javahandler.JavaHandlerModule;
 
+/**
+ * @author tuyenng
+ *
+ */
 public class Application extends Controller {
 
+	/**
+	 * Graph
+	 */
 	public static TitanGraph graph;
 
+	public static final String EVENTSOURCE = "1";
+	/**
+	 * List Event Source
+	 */
+	private static Map<String, List<EventSource>> eventSources = new HashMap<String, List<EventSource>>();
+
+	/**
+	 * show all person
+	 * 
+	 * @return List person
+	 */
 	public static Result showPerson() {
 
 		Iterable<Vertex> it = graph.getVertices();
@@ -44,7 +66,6 @@ public class Application extends Controller {
 		FramedTransactionalGraph<TitanGraph> frame = factory.create(graph);
 
 		List<Person> listPersons = new ArrayList<Person>();
-
 		List<ObjectNode> vexters = new ArrayList<ObjectNode>();
 
 		frame.getVertices().forEach(e -> {
@@ -94,8 +115,8 @@ public class Application extends Controller {
 			ObjectNode font = Json.newObject();
 			font.put("align", "middle");
 			idNode.put("font", Json.toJson(font));
-			listId.add(idNode);
 
+			listId.add(idNode);
 			friends.add(edge_friend);
 		}
 
@@ -106,6 +127,11 @@ public class Application extends Controller {
 		return ok(Json.toJson(node));
 	}
 
+	/**
+	 * Save person
+	 * 
+	 * @return vertex
+	 */
 	public static Result savePerson() {
 		Form<VertexC> form = new Form<VertexC>(VertexC.class).bindFromRequest();
 		if (form.hasErrors())
@@ -125,9 +151,21 @@ public class Application extends Controller {
 
 		graph.commit();
 
+		ObjectNode node = Json.newObject();
+		node.put("id", vertex.getId().toString());
+		node.put("label", person.getName());
+		node.put("isVertex", true);
+		Logger.debug("node: " + node);
+		sendEv(node);
+
 		return ok(Json.toJson(VertexC));
 	}
 
+	/**
+	 * update relationship node
+	 * 
+	 * @return Json node
+	 */
 	public static Result updateEdge() {
 
 		Form<EdgeC> form = new Form<EdgeC>(EdgeC.class).bindFromRequest();
@@ -177,8 +215,88 @@ public class Application extends Controller {
 		ObjectNode node = Json.newObject();
 		node.put("edge1", Json.toJson(edge1));
 		node.put("edge2", Json.toJson(edge2));
-		
+
+		// sever send Event
+		ObjectNode font = Json.newObject();
+		font.put("align", "middle");
+		ObjectNode edge = Json.newObject();
+
+		ObjectNode idNode1 = Json.newObject();
+		idNode1.put("from", vin.getId().toString());
+		idNode1.put("to", v.getId().toString());
+		idNode1.put("arrows", "to");
+		idNode1.put("label", edgeC.inproperty);
+		idNode1.put("font", Json.toJson(font));
+
+		ObjectNode idNode2 = Json.newObject();
+		idNode2.put("from", v.getId().toString());
+		idNode2.put("to", vout.getId().toString());
+		idNode2.put("arrows", "to");
+		idNode2.put("label", edgeC.outproperty);
+		idNode2.put("font", Json.toJson(font));
+
+		List edges = new ArrayList<ObjectNode>() {
+			{
+				add(idNode1);
+				add(idNode2);
+			}
+		};
+
+		edge.put("ids", Json.toJson(edges));
+		edge.put("isVertex", false);
+		Logger.debug("edge: " + edge);
+		sendEv(edge);
+
 		return ok(Json.toJson(node));
+	}
+
+	/**
+	 * Register graph real time
+	 * 
+	 * @return event source
+	 */
+	public static Result registerRealTimeGraph() {
+		String remoteAddress = request().remoteAddress();
+		Logger.info(remoteAddress + " :  SSE connected");
+		String room = EVENTSOURCE;
+		return ok(new EventSource() {
+			@SuppressWarnings("serial")
+			@Override
+			public void onConnected() {
+				EventSource sse = this;
+				this.onDisconnected(() -> {
+					Logger.info(remoteAddress + " SSE disconnected");
+					eventSources.compute(room, (key, value) -> {
+						if (value.contains(sse))
+							value.remove(sse);
+						return value;
+					});
+				});
+				eventSources.compute(room, (key, value) -> {
+					if (value == null)
+						return new ArrayList<EventSource>() {
+							{
+								add(sse);
+							}
+						};
+					else
+						value.add(sse);
+					return value;
+				});
+			}
+		});
+	}
+
+	/**
+	 * Send data when event active
+	 * 
+	 * @param msg
+	 */
+	public static void sendEv(JsonNode msg) {
+		if (eventSources.containsKey(EVENTSOURCE)) {
+			eventSources.get(EVENTSOURCE).stream()
+					.forEach(es -> es.send(EventSource.Event.event(msg)));
+		}
 	}
 
 	public static class VertexC {

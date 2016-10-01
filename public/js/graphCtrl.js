@@ -63,4 +63,31 @@ app.controller('graphCtrl', function($scope, $http) {
         .error(function(data) {
             console.log(data);
         });
+
+    /** handle incoming messages: add to messages array */
+    $scope.addNode = function(msg) {
+        console.log('msg: ' + msg);
+        $scope.$apply(function() {
+            var node = JSON.parse(msg.data);
+            if (node.isVertex) {
+                node.color = {
+                    background: 'pink',
+                    border: 'green'
+                };
+                console.log(node);
+                nodes.add(node);
+            } else {
+                console.log(node);
+                edges.add(node.ids);
+            }
+        });
+    };
+
+    /** start listening on messages from server */
+    $scope.listen = function() {
+        $scope.realtime = new EventSource('register/realtime/graph');
+        $scope.realtime.addEventListener('message', $scope.addNode,
+            false);
+    };
+    $scope.listen();
 });
