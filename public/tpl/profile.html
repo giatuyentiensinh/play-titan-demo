@@ -3,22 +3,36 @@
         <div class="center-align  col s12 m4 l3" ng-repeat="person in persons">
             <ul class="collapsible popout" data-collapsible="accordion" watch>
                 <li>
-                    <div class="collapsible-header indigo-text text-darken-4"><i class="mdi-image-filter-drama"></i>{{person.name}}</div>
+                    <div class="collapsible-header indigo-text text-darken-4">
+                        <span class="left">{{::person.name}}</span>
+                        <span class="right" ng-click="removePerson($index)" style="margin-right: -45px; z-index: 100">
+                            <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                                <path fill="#000000" d="M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19M8.46,11.88L9.87,10.47L12,12.59L14.12,10.47L15.53,11.88L13.41,14L15.53,16.12L14.12,17.53L12,15.41L9.88,17.53L8.47,16.12L10.59,14L8.46,11.88M15.5,4L14.5,3H9.5L8.5,4H5V6H19V4H15.5Z" />
+                            </svg>
+                        </span>
+                    </div>
                     <!-- <div class="collapsible-body">
                         <p>{{person.name}}</p>
                     </div> -->
                     <a class='btn red darken-4' href='#relation' modal ng-click="currentPerson(person.name)">Add relation</a>
                 </li>
                 <li>
-                    <div class="collapsible-header"><i class="mdi-maps-place"></i>age</div>
+                    <div class="collapsible-header">age</div>
                     <div class="collapsible-body">
-                        <p>{{person.age}}</p>
+                        <p>{{::person.age}}</p>
                     </div>
                 </li>
                 <li>
-                    <div class="collapsible-header"><i class="mdi-social-whatshot"></i>description</div>
+                    <div class="collapsible-header">
+                        <span class="left" style="margin-left: -50px; z-index: 100" modal href="#relationOne" ng-click="currentPerson(person.name)">
+                            <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                                <path fill="#000000" d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+                            </svg>
+                        </span>
+                        <span>description</span>
+                    </div>
                     <div class="collapsible-body">
-                        <p>{{person.desc}}</p>
+                        <p>{{::person.desc}}</p>
                     </div>
                 </li>
             </ul>
@@ -57,8 +71,8 @@
 <!-- Modal Structure -->
 <div id="demoModal" class="modal">
     <div class="modal-content">
-        <h1 class="red-text text-darken-3">Tôi là</h1>
-        <h3 class="deep-purple-text text-accent-4 flow-text">Một lập trình viên</h3>
+        <h1 class="red-text text-darken-3">I am</h1>
+        <h3 class="deep-purple-text text-accent-4 flow-text">a Programmer</h3>
     </div>
     <div class="modal-footer">
         <a href class=" modal-action modal-close waves-effect waves-green btn-flat">Yap</a>
@@ -84,6 +98,25 @@
             <div class="input-field col s6">
                 <input ng-model="outproperty" type="text" class="validate" required>
                 <label for="outperson">Out property *</label>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="waves-effect waves-green btn-flat modal-action modal-close">Update</button>
+        </div>
+    </form>
+</div>
+<!-- Modal Structure -->
+<div id="relationOne" class="modal">
+    <form ng-submit="addRelationOne()">
+        <div class="modal-content">
+            <h4>{{currentname}}</h4>
+            <div class="input-field col s6">
+                <input ng-model="inperson" type="text" class="validate" required>
+                <label for="inperson">In person *</label>
+            </div>
+            <div class="input-field col s6">
+                <input ng-model="inproperty" type="text" class="validate" required>
+                <label for="inperson">In property *</label>
             </div>
         </div>
         <div class="modal-footer">

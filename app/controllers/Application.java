@@ -18,6 +18,8 @@ import play.mvc.Result;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.thinkaurelius.titan.core.TitanGraph;
+import com.thinkaurelius.titan.core.TitanTransaction;
+import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.frames.FramedGraph;
@@ -50,7 +52,8 @@ public class Application extends Controller {
 	 */
 	public static Result showPerson() {
 
-		Iterable<Vertex> it = graph.getVertices();
+		TitanTransaction tx = graph.newTransaction();
+		Iterable<Vertex> it = tx.getVertices();
 
 		for (Vertex vertex : it) {
 			Object id = vertex.getId();
@@ -80,6 +83,7 @@ public class Application extends Controller {
 		ObjectNode node = Json.newObject();
 		node.put("persons", Json.toJson(listPersons));
 		node.put("vexters", Json.toJson(vexters));
+		tx.shutdown();
 		return ok(Json.toJson(node));
 	}
 
@@ -158,6 +162,31 @@ public class Application extends Controller {
 		sendEv(node);
 
 		return ok(Json.toJson(VertexC));
+	}
+
+	/**
+	 * Delete person
+	 * 
+	 * @param id
+	 * @return notification
+	 */
+	public static Result removePerson(String id) {
+		TitanTransaction tx = graph.newTransaction();
+		Vertex vertex = tx.getVertex(id);
+		if (vertex == null)
+			return badRequest("NOT FOUND VERTEX [" + id + "]");
+
+		Iterable<Edge> edgesIn = vertex.getEdges(Direction.IN, "know");
+		for (Edge edge : edgesIn) {
+			edge.remove();
+		}
+		Iterable<Edge> edgesOut = vertex.getEdges(Direction.OUT, "friend");
+		for (Edge edge : edgesOut) {
+			edge.remove();
+		}
+		vertex.remove();
+		tx.commit();
+		return ok("DELETE VERTEX [" + id + "] SUCCESSED");
 	}
 
 	/**
@@ -249,6 +278,70 @@ public class Application extends Controller {
 	}
 
 	/**
+	 * update relationship one binding node
+	 * 
+	 * @return Json node
+	 */
+	public static Result updateEdgeIn() {
+
+		Form<EdgeOneBind> form = new Form<EdgeOneBind>(EdgeOneBind.class)
+				.bindFromRequest();
+
+		if (form.hasErrors())
+			return badRequest(form.errorsAsJson());
+		EdgeOneBind edgeOneBind = form.get();
+		String personname = edgeOneBind.person;
+
+		FramedGraphFactory factory = new FramedGraphFactory(
+				new GremlinGroovyModule(), new JavaHandlerModule());
+		FramedTransactionalGraph<TitanGraph> frame = factory.create(graph);
+
+		Vertex v = graph.getVertices("name", personname).iterator().next();
+
+		String namein = edgeOneBind.inperson;
+		Vertex vin = graph.getVertices("name", namein).iterator().next();
+		Logger.info("in person: " + namein);
+
+		Object idedge = graph.addEdge(1, v, vin, "know").getId();
+
+		Friend edge = frame.getEdge(idedge, Friend.class);
+		edge.setRelation(edgeOneBind.inproperty);
+		frame.commit();
+
+		System.out.println("Vexter: " + Json.toJson(v.getProperty("name")));
+
+		System.out.println("Inperson edge:" + Json.toJson(edge.getInPerson()));
+		System.out.println("Outperson edge: "
+				+ Json.toJson(edge.getOutPerson()));
+
+		ObjectNode node = Json.newObject();
+		node.put("edge", Json.toJson(edge));
+
+		// sever send Event
+		ObjectNode font = Json.newObject();
+		font.put("align", "middle");
+		ObjectNode edgeEv = Json.newObject();
+
+		ObjectNode idNode1 = Json.newObject();
+		idNode1.put("from", vin.getId().toString());
+		idNode1.put("to", v.getId().toString());
+		idNode1.put("arrows", "to");
+		idNode1.put("label", edgeOneBind.inproperty);
+		idNode1.put("font", Json.toJson(font));
+
+		edgeEv.put("ids", Json.toJson(new ArrayList<ObjectNode>() {
+			private static final long serialVersionUID = 1L;
+			{
+				add(idNode1);
+			}
+		}));
+		edgeEv.put("isVertex", false);
+		sendEv(edgeEv);
+
+		return ok(Json.toJson(node));
+	}
+
+	/**
 	 * Register graph real time
 	 * 
 	 * @return event source
@@ -317,6 +410,14 @@ public class Application extends Controller {
 		public String outperson;
 		@Required
 		public String outproperty;
+	}
 
+	public static class EdgeOneBind {
+		@Required
+		public String person;
+		@Required
+		public String inperson;
+		@Required
+		public String inproperty;
 	}
 }

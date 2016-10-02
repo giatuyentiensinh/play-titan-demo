@@ -8,6 +8,8 @@ GET		/friends								controllers.Application.showFriend()
 
 POST	/post									controllers.Application.savePerson()
 POST	/relation								controllers.Application.updateEdge()
+POST	/relation/inbind						controllers.Application.updateEdgeIn()
+DELETE	/post/:id								controllers.Application.removePerson(id: String)
 
 GET		/users		controllers.Users.lists
 POST	/save		controllers.Users.saveUser
