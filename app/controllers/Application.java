@@ -51,7 +51,7 @@ public class Application extends Controller {
 	 * @return List person
 	 */
 	public static Result showPerson() {
-
+		Logger.info("controller.Application.showPerson");
 		TitanTransaction tx = graph.newTransaction();
 		Iterable<Vertex> it = tx.getVertices();
 
@@ -89,11 +89,13 @@ public class Application extends Controller {
 
 	public static Result showFriend() {
 		Logger.info("controller.Application.showFriend");
+		FramedGraph<TitanGraph> frame = new FramedGraphFactory(
+				new GremlinGroovyModule()).create(graph);
 		Iterable<Edge> it = graph.getEdges();
 
 		List<Friend> friends = new ArrayList<Friend>();
 		List<ObjectNode> listId = new ArrayList<ObjectNode>();
-
+		
 		for (Edge edge : it) {
 			Object id = edge.getId();
 			Logger.debug("-------------------------");
@@ -103,8 +105,6 @@ public class Application extends Controller {
 			edge.getPropertyKeys().forEach(e -> {
 				System.out.println(e + " : " + edge.getProperty(e));
 			});
-			FramedGraph<TitanGraph> frame = new FramedGraphFactory(
-					new GremlinGroovyModule()).create(graph);
 			Friend edge_friend = frame.getEdge(id, Friend.class);
 
 			String in = edge_friend.getInPerson().asVertex().getId().toString();

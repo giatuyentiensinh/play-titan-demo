@@ -10,13 +10,18 @@ import com.thinkaurelius.titan.core.PropertyKey;
 import com.thinkaurelius.titan.core.TitanFactory;
 import com.thinkaurelius.titan.core.schema.Mapping;
 import com.thinkaurelius.titan.core.schema.TitanManagement;
+import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 
 public class Global extends GlobalSettings {
 
-	public static final String LABEL = "PERSON";
+	public static final String NODE_LABEL = "PERSON";
+	public static final String EDGE_LABEL = "know";
 	public static final String NAME = "name";
-	public static final String SEARCH_NAME = "Search_name";
+	public static final String DESC = "desc";
+	public static final String RELATION = "relation";
+	public static final String SEARCH_NODE = "node";
+	public static final String SEARCH_EDGE = "edge";
 	public static final String SEARCH_ENGINE = "search";
 
 	@Override
@@ -46,15 +51,28 @@ public class Global extends GlobalSettings {
 		System.out.println(controllers.Application.graph);
 		TitanManagement mgmt = controllers.Application.graph
 				.getManagementSystem();
-		if (!mgmt.containsVertexLabel(LABEL)) {
+		if (!mgmt.containsVertexLabel(NODE_LABEL)) {
+			// node
 			PropertyKey name = mgmt.makePropertyKey(NAME)
 					.dataType(String.class).make();
-			mgmt.makeVertexLabel(LABEL).make();
-			mgmt.buildIndex(SEARCH_NAME, Vertex.class)
+			PropertyKey desc = mgmt.makePropertyKey(DESC)
+					.dataType(String.class).make();
+			mgmt.makeVertexLabel(NODE_LABEL).make();
+			mgmt.buildIndex(SEARCH_NODE, Vertex.class)
 					.addKey(name, Mapping.TEXT.getParameter())
+					.addKey(desc, Mapping.TEXT.getParameter())
+					.buildMixedIndex(SEARCH_ENGINE);
+
+			// edge
+			PropertyKey relation = mgmt.makePropertyKey(RELATION)
+					.dataType(String.class).make();
+			mgmt.makeEdgeLabel(EDGE_LABEL).make();
+			mgmt.buildIndex(SEARCH_EDGE, Edge.class)
+					.addKey(relation, Mapping.TEXT.getParameter())
 					.buildMixedIndex(SEARCH_ENGINE);
 			mgmt.commit();
 		}
+
 		super.onStart(app);
 	}
 
